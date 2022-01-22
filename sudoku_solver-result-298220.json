@@ -1,0 +1,18 @@
+[
+    {
+        "description": "1. The naked_twins method applies the 'naked twins' strategy",
+        "advice": "",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/grader/sudoku_solver/__utils.py\", line 135, in test\n    test_fn(*args, **kwargs)\n  File \"/home/grader/sudoku_solver/__utils.py\", line 73, in test\n    test_fn(*args, **kwargs)\n  File \"/home/grader/sudoku_solver/__utils.py\", line 354, in func_wrapper\n    return func(self)\n  File \"run3.py\", line 126, in test_naked_twins\n    values = solution.naked_twins(values)\n  File \"/home/grader/sudoku_solver/workspace/solution.py\", line 9, in naked_twins\n    SearchService().naked_twins(values)\n  File \"/home/grader/sudoku_solver/workspace/solution.py\", line 137, in naked_twins\n    twins = [[box1, box2] for box1 in candidates for box2 in self.peers[box1] if set(values[box1]) == set(values[box2])]\n  File \"/home/grader/sudoku_solver/workspace/solution.py\", line 137, in <listcomp>\n    twins = [[box1, box2] for box1 in candidates for box2 in self.peers[box1] if set(values[box1]) == set(values[box2])]\nAttributeError: 'SearchService' object has no attribute 'peers'\n",
+        "result": "E",
+        "message": "",
+        "rubric_item_id": "10687"
+    },
+    {
+        "description": "2. The solve method produces a valid solution",
+        "advice": "",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/grader/sudoku_solver/__utils.py\", line 135, in test\n    test_fn(*args, **kwargs)\n  File \"/home/grader/sudoku_solver/__utils.py\", line 73, in test\n    test_fn(*args, **kwargs)\n  File \"/home/grader/sudoku_solver/__utils.py\", line 354, in func_wrapper\n    return func(self)\n  File \"run3.py\", line 178, in test_solve\n    values = solution.solve(grid.rstrip())\nAttributeError: module 'workspace.solution' has no attribute 'solve'\n",
+        "result": "E",
+        "message": "",
+        "rubric_item_id": "10688"
+    }
+]

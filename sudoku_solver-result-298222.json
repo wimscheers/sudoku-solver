@@ -1,0 +1,18 @@
+[
+    {
+        "description": "1. The naked_twins method applies the 'naked twins' strategy",
+        "advice": "",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/grader/sudoku_solver/__utils.py\", line 135, in test\n    test_fn(*args, **kwargs)\n  File \"/home/grader/sudoku_solver/__utils.py\", line 73, in test\n    test_fn(*args, **kwargs)\n  File \"/home/grader/sudoku_solver/__utils.py\", line 354, in func_wrapper\n    return func(self)\n  File \"run3.py\", line 125, in test_naked_twins\n    prev_values = values.copy()\nAttributeError: 'NoneType' object has no attribute 'copy'\n",
+        "result": "E",
+        "message": "",
+        "rubric_item_id": "10687"
+    },
+    {
+        "description": "2. The solve method produces a valid solution",
+        "advice": "",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/grader/sudoku_solver/__utils.py\", line 135, in test\n    test_fn(*args, **kwargs)\n  File \"/home/grader/sudoku_solver/__utils.py\", line 73, in test\n    test_fn(*args, **kwargs)\n  File \"/home/grader/sudoku_solver/__utils.py\", line 354, in func_wrapper\n    return func(self)\n  File \"run3.py\", line 178, in test_solve\n    values = solution.solve(grid.rstrip())\nAttributeError: module 'workspace.solution' has no attribute 'solve'\n",
+        "result": "E",
+        "message": "",
+        "rubric_item_id": "10688"
+    }
+]

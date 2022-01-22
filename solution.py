@@ -1,9 +1,5 @@
 import json
 
-from colorama import Fore
-from dependency_injector import containers, providers
-from dependency_injector.containers import Container
-
 def eliminate(values):
 
     SearchService().eliminate(values)
@@ -28,47 +24,44 @@ class Sudoku:
         self.title = title
         self.grid = grid
         self.searchservice = SearchService()
-        self.display = Display()
 
     def search(self) -> str:
-        return self.searchservice.search(self.grid)
-
-    def displaySolution(self, values: dict):
-        self.display.drawGrid(values)
-
+        return self.searchservice.convert_grid_from_string_to_dict(self.grid)
 
 class SearchService:
-    rows:str = 'ABCDEFGHI'
-    cols:str = '123456789'
-    values: dict = dict()
+    rows = 'ABCDEFGHI'
+    cols = '123456789'
+    values = dict()
+
+    assignments = []
 
     def cross(self, a, b):
         return [s + t for s in a for t in b]
 
     def __init__(self) -> None:
         values = dict()
-        boxes = self.cross('ABCDEFGHI', '123456789')
+        self.boxes = self.cross('ABCDEFGHI', '123456789')
 
         row_units = [self.cross(r, self.cols) for r in self.rows]
         column_units = [self.cross(self.rows, c) for c in self.cols]
         square_units = [self.cross(rs, cs) for rs in ('ABC', 'DEF', 'GHI') for cs in ('123', '456', '789')]
         unitlist = row_units + column_units + square_units
-        units = dict((s, [u for u in unitlist if s in u]) for s in boxes)
-        peers = dict((s, set(sum(units[s], [])) - set([s])) for s in boxes)
+        units = dict((s, [u for u in unitlist if s in u]) for s in self.boxes)
+        self.peers = dict((s, set(sum(units[s], [])) - set([s])) for s in self.boxes)
 
-    def search(self, grid: str) -> dict:
-        print("search using grid ", grid)
-        loaded_sample:dict = json.loads(grid)
+    def convert_grid_from_string_to_dict(self, grid: str) -> dict:
+        loaded_sample = json.loads(grid)
         values = self.extract_values(loaded_sample)
         # loaded_sample = json.load('sample.json')
         # print("loaded_sample: " + loaded_sample)
         return values
 
+
     def extract_values(self, loaded_sample:list) -> dict:
         #Build json document
-        result: dict = dict()
+        result = dict()
         for el in loaded_sample:
-            key: str = next(iter(el))
+            key = next(iter(el))
             result[key] = {key: {el[key]}}
 
         #"i = 1
@@ -129,7 +122,7 @@ class SearchService:
 
         return values
 
-    def naked_twins(values):
+    def naked_twins(self, values):
         """Eliminate values using the naked twins strategy.
         Args:
             values(dict): a dictionary of the form {'box_name': '123456789', ...}
@@ -141,62 +134,47 @@ class SearchService:
         candidates = [box for box in values.keys() if len(values[box]) == 2]
 
         # Collect boxes that have the same elements
-        twins = [[box1, box2] for box1 in candidates for box2 in peers[box1] if set(values[box1]) == set(values[box2])]
+        twins = [[box1, box2] for box1 in candidates for box2 in self.peers[box1] if set(values[box1]) == set(values[box2])]
 
         for b1, b2 in twins:
             print(b1, b2, values[b1])
 
         for box1, box2 in twins:
 
-            peers1 = set(peers[box1])
-            peers2 = set(peers[box2])
+            peers1 = set(self.peers[box1])
+            peers2 = set(self.peers[box2])
 
             peers_int = peers1.intersection(peers2)
 
             # delete the two digits from all common peers
             for peer_box in peers_int:
                 for rm_val in values[box1]:
-                    values = assign_value(values, peer_box, values[peer_box].replace(rm_val, ''))
+                    values = self.assign_value(values, peer_box, values[peer_box].replace(rm_val, ''))
 
         return values
 
-
-class Display:
-    rows = 'ABCDEFGHI'
-    cols = '123456789'
-
-    def cross(a, b):
-        return [s + t for s in a for t in b]
-
-    boxes = cross(rows, cols)
-
-    def drawGrid(self, values: dict):
+    def assign_value(self, values, box, value):
         """
-        Display the values as a 2-D grid.
-        Input: The sudoku in dictionary form
-        Output: None
+        Please use this function to update your values dictionary!
+        Assigns a value to a given box. If it updates the board record it.
         """
-        try:
-            width = 1 + max(len(values[s]) for s in self.boxes)
-            print(f"\n{Fore.BLUE} ${width}")
-        except TypeError as e:
-            print(f"\n{Fore.RED} TypeError occured ${e}")
-            width = 5
 
-        line = '+'.join(['-' * (width * 3)] * 3)
-        for r in self.rows:
-            try:
-                print(''.join(values[r + c].center(width) + ('|' if c in '36' else '')  for c in self.cols))
-                print(f"\n{Fore.RED} TypeError occured ${e}")
-            except TypeError as e:
-                print(f"\n{Fore.RED} TypeError occured ${e}")
-            if r in 'CF': print(line)
-        return
+        # Don't waste memory appending actions that don't actually change any values
+        if values[box] == value:
+            return values
+
+        values[box] = value
+        if len(value) == 1:
+            self.assignments.append(values.copy())
+        return values
+
+    def get_boxes(self):
+        return self.boxes
 
 
 if __name__ == "__main__":
     #grid = '..3.2.6.. 9..3.5.. 1..18.64. ...81.29. .7....... 8..67.82. ...26.95. .8..2.3.. 9..5.1.3..'
-    grid: str = "[{\"A1\": \".\"},{\"A2\": \".\"},{\"A3\": \"3\"},{\"A4\": \".\"},{\"A5\": \"2\"},{\"A6\": \".\"},{\"A7\": \"6\"},{\"A8\": \".\"},{\"A9\": \".\"}," \
+    grid = "[{\"A1\": \".\"},{\"A2\": \".\"},{\"A3\": \"3\"},{\"A4\": \".\"},{\"A5\": \"2\"},{\"A6\": \".\"},{\"A7\": \"6\"},{\"A8\": \".\"},{\"A9\": \".\"}," \
                 "{\"B1\": \"9\"},{\"B2\": \".\"},{\"B3\": \".\"},{\"B4\": \"3\"},{\"B5\": \".\"},{\"B6\": \"5\"},{\"B7\": \".\"},{\"B8\": \".\"},{\"B9\": \".\"}," \
                 "{\"C1\": \"1\"},{\"C2\": \".\"},{\"C3\": \".\"},{\"C4\": \"1\"},{\"C5\": \"8\"},{\"C6\": \".\"},{\"C7\": \"6\"},{\"C8\": \"4\"},{\"C9\": \".\"}," \
                 "{\"D1\": \".\"},{\"D2\": \".\"},{\"D3\": \".\"},{\"D4\": \"8\"},{\"D5\": \".\"},{\"D6\": \".\"},{\"D7\": \"2\"},{\"D8\": \"9\"},{\"D9\": \".\"}," \
