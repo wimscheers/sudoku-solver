@@ -4,12 +4,13 @@ from colorama import Fore
 from dependency_injector import containers, providers
 from dependency_injector.containers import Container
 
-from runtime.sudoku import Sudoku
-
 def eliminate(values):
+
     SearchService().eliminate(values)
 
 def naked_twins(values):
+
+    SearchService().naked_twins(values)
 
 class Sudoku:
 
